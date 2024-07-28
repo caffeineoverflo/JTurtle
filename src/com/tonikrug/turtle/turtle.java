@@ -9,52 +9,65 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class turtle {
+    // Indicates if an error has occurred
     static boolean hadError = false;
+
+    // Entry point of the application
     public static void main(String[] args) throws IOException {
+        // If there are more than one argument, print usage and exit
         if (args.length > 1) {
-            System.out.println("Usage: jlox [script]");
+            System.out.println("Usage: turtle [script]");
             System.exit(64);
         } else if (args.length == 1) {
+            // Run the script from a file
             runFile(args[0]);
         } else {
+            // Run the interactive prompt
             runPrompt();
         }
     }
+
+    // Run the script from a file
     private static void runFile(String path) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()));
-        // Indicate an error in the exit code.
+        // Exit with error code if an error occurred
         if (hadError) System.exit(65);
     }
 
+    // Run the interactive prompt
     private static void runPrompt() throws IOException {
         InputStreamReader input = new InputStreamReader(System.in);
         BufferedReader reader = new BufferedReader(input);
+        // Continuously read and execute lines of input
         for (;;) {
             System.out.print("> ");
             String line = reader.readLine();
-            if (line == null) break;
+            if (line == null) break; // Exit on end of input
             run(line);
-            hadError = false;
+            hadError = false; // Reset error flag for next command
         }
     }
+
+    // Run the interpreter with the given source code
     private static void run(String source) {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
 
-        // For now, just print the tokens.
+        // For now, just print the tokens
         for (Token token : tokens) {
             System.out.println(token);
         }
     }
+
+    // Report an error at a specific line
     static void error(int line, String message) {
         report(line, "", message);
     }
-    private static void report(int line, String where,
-                               String message) {
-        System.err.println(
-                "[line " + line + "] Error" + where + ": " + message);
-        hadError = true;
-    }
 
+    // Report an error with additional context
+    private static void report(int line, String where, String message) {
+        System.err.println("[line " + line + "] Error" + where + ": " + message);
+        hadError = true; // Set the error flag
+    }
 }
