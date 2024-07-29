@@ -4,21 +4,62 @@ class AstPrinter implements Expr.Visitor<String> {
     String print(Expr expr) {
         return expr.accept(this);
     }
+
+    @Override
+    public String visitAssignExpr(Expr.Assign expr) {
+        return "";
+    }
+
     @Override
     public String visitBinaryExpr(Expr.Binary expr){
-        return paranthesize(expr.operator.lexeme,
+        return parenthesize(expr.operator.lexeme,
                             expr.left, expr.right);
     }
 
     @Override
+    public String visitCallExpr(Expr.Call expr) {
+        return "";
+    }
+
+    @Override
+    public String visitGetExpr(Expr.Get expr) {
+        return "";
+    }
+
+    @Override
+    public String visitVariableExpr(Expr.Variable expr) {
+        return "";
+    }
+
+    @Override
     public String visitGroupingExpr(Expr.Grouping expr){
-        return paranthesize("group", expr.expression);
+        return parenthesize("group", expr.expression);
     }
 
     @Override
     public String visitLiteralExpr(Expr.Literal expr){
         if (expr.value ==  null) return "nil";
         return expr.value.toString();
+    }
+
+    @Override
+    public String visitLogicalExpr(Expr.Logical expr) {
+        return "";
+    }
+
+    @Override
+    public String visitSetExpr(Expr.Set expr) {
+        return "";
+    }
+
+    @Override
+    public String visitSuperExpr(Expr.Super expr) {
+        return "";
+    }
+
+    @Override
+    public String visitThisExpr(Expr.This expr) {
+        return "";
     }
 
     @Override

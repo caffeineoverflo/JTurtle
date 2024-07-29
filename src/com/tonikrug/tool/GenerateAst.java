@@ -46,24 +46,24 @@ public class GenerateAst {
             String outputDir, String baseName, List<String> types)
             throws IOException {
         String path = outputDir + "/" + baseName + ".java";
-        PrintWriter writer = new PrintWriter(path, "UTF-8");
-        writer.println("package com.craftinginterpreters.;");
-        writer.println();
-        writer.println("import java.util.List;");
-        writer.println();
-        writer.println("abstract class " + baseName + " {");
-        defineVisitor(writer, baseName, types);
-        for (String type : types) {
-            String className = type.split(":")[0].trim();
-            String fields = type.split(":")[1].trim();
-            defineType(writer, baseName, className, fields);
+        try (PrintWriter writer = new PrintWriter(path, "UTF-8")) {
+            writer.println("package com.tonikrug.turtle;");
+            writer.println();
+            writer.println("import java.util.List;");
+            writer.println();
+            writer.println("abstract class " + baseName + " {");
+            defineVisitor(writer, baseName, types);
+            for (String type : types) {
+                String className = type.split(":")[0].trim();
+                String fields = type.split(":")[1].trim();
+                defineType(writer, baseName, className, fields);
+            }
+            // The base accept() method.
+            writer.println();
+            writer.println("  abstract <R> R accept(Visitor<R> visitor);");
+            
+            writer.println("}");
         }
-        // The base accept() method.
-        writer.println();
-        writer.println("  abstract <R> R accept(Visitor<R> visitor);");
-
-        writer.println("}");
-        writer.close();
     }
 
     private static void defineVisitor(

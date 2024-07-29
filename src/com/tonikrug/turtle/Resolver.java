@@ -56,7 +56,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
             currentClass = ClassType.SUBCLASS;
         }
             resolve(stmt.superclass);
-        }
+
         if (stmt.superclass != null) {
             beginScope();
             scopes.peek().put("super", true);

@@ -40,7 +40,7 @@ class TurtleClass implements TurtleCallable {
 
     @Override
     public int arity() {
-        LoxFunction initializer = findMethod("init");
+        TurtleFunction initializer = findMethod("init");
         if (initializer == null) return 0;
         return initializer.arity();
     }
