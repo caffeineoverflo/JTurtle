@@ -4,7 +4,9 @@ import java.util.List;
 
 class TurtleFunction implements TurtleCallable {
     private final Stmt.Function declaration;
-    TurtleFunction(Stmt.Function declaration) {
+    private final Environment closure;
+    TurtleFunction(Stmt.Function declaration, Environment closure) {
+        this.closure = closure;
         this.declaration = declaration;
     }
 }
@@ -22,7 +24,7 @@ public String toString() {
 @Override
 public Object call(Interpreter interpreter,
                    List<Object> arguments) {
-    Environment environment = new Environment(interpreter.globals);
+    Environment environment = new Environment(closure);
     for (int i = 0; i < declaration.params.size(); i++) {
         environment.define(declaration.params.get(i).lexeme,
                 arguments.get(i));

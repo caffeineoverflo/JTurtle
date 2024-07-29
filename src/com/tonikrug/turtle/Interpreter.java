@@ -143,7 +143,7 @@ public class Interpreter implements Expr.Visitor<Object>,
 
     @Override
     public Void visitFunctionStmt(Stmt.Function stmt) {
-        TurtleFunction function = new TurtleFunction(stmt);
+        TurtleFunction function = new TurtleFunction(stmt, environment);
         environment.define(stmt.name.lexeme, function);
         return null;
     }
