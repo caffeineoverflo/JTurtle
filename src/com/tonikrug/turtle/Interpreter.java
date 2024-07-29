@@ -13,7 +13,7 @@ public class Interpreter implements Expr.Visitor<Object>,
     private Environment environment = globals;
 
     Interpreter() {
-        globals.define("clock", new LoxCallable() {
+        globals.define("clock", new TurtleCallable() {
             @Override
             public int arity() { return 0; }
             @Override
@@ -62,6 +62,18 @@ public class Interpreter implements Expr.Visitor<Object>,
             if (!isTruthy(left)) return left;
         }
         return evaluate(expr.right);
+    }
+
+    @Override
+    public Object visitSetExpr(Expr.Set expr) {
+        Object object = evaluate(expr.object);
+        if (!(object instanceof TurtleInstance)) {
+            throw new RuntimeError(expr.name,
+                    "Only instances have fields.");
+        }
+        Object value = evaluate(expr.value);
+        ((TurtleInstance)object).set(expr.name, value);
+        return value;
     }
 
     @Override
@@ -148,6 +160,14 @@ public class Interpreter implements Expr.Visitor<Object>,
     @Override
     public Void visitBlockStmt(Stmt.Block stmt) {
         executeBlock(stmt.statements, new Environment(environment));
+        return null;
+    }
+
+    @Override
+    public Void visitClassStmt(Stmt.Class stmt) {
+        environment.define(stmt.name.lexeme, null);
+        TurtleClass klass = new TurtleClass(stmt.name.lexeme);
+        environment.assign(stmt.name, klass);
         return null;
     }
 
@@ -282,5 +302,13 @@ public class Interpreter implements Expr.Visitor<Object>,
         return function.call(this, arguments);
     }
 
-
+    @Override
+    public Object visitGetExpr(Expr.Get expr) {
+        Object object = evaluate(expr.object);
+        if (object instanceof TurtleInstance) {
+            return ((TurtleInstance) object).get(expr.name);
+        }
+        throw new RuntimeError(expr.name,
+                "Only instances have properties.");
+    }
 }
