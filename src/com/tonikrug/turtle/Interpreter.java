@@ -77,6 +77,11 @@ public class Interpreter implements Expr.Visitor<Object>,
     }
 
     @Override
+    public Object visitThisExpr(Expr.This expr) {
+        return lookUpVariable(expr.keyword, expr);
+    }
+
+    @Override
     public Object visitUnaryExpr(Expr.Unary expr) {
         Object right = evaluate(expr.right);
         switch (expr.operator.type) {
@@ -166,7 +171,13 @@ public class Interpreter implements Expr.Visitor<Object>,
     @Override
     public Void visitClassStmt(Stmt.Class stmt) {
         environment.define(stmt.name.lexeme, null);
-        TurtleClass klass = new TurtleClass(stmt.name.lexeme);
+        Map<String, TurtleFunction> methods = new HashMap<>();
+        for (Stmt.Function method : stmt.methods) {
+            TurtleFunction function = new TurtleFunction(method, environment,
+                    method.name.lexeme.equals("init"));
+            methods.put(method.name.lexeme, function);
+        }
+        TurtleClass klass = new TurtleClass(stmt.name.lexeme, methods);
         environment.assign(stmt.name, klass);
         return null;
     }
@@ -179,7 +190,7 @@ public class Interpreter implements Expr.Visitor<Object>,
 
     @Override
     public Void visitFunctionStmt(Stmt.Function stmt) {
-        TurtleFunction function = new TurtleFunction(stmt, environment);
+        TurtleFunction function = new TurtleFunction(stmt, environment, false);
         environment.define(stmt.name.lexeme, function);
         return null;
     }

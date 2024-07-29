@@ -3,12 +3,21 @@ package com.tonikrug.turtle;
 import java.util.List;
 
 class TurtleFunction implements TurtleCallable {
+    private final boolean isInitializer;
     private final Stmt.Function declaration;
     private final Environment closure;
-    TurtleFunction(Stmt.Function declaration, Environment closure) {
+    TurtleFunction(Stmt.Function declaration, Environment closure, boolean isInitializer) {
+        this.isInitializer = isInitializer;
         this.closure = closure;
         this.declaration = declaration;
     }
+
+    TurtleFunction bind(TurtleInstance instance) {
+        Environment environment = new Environment(closure);
+        environment.define("this", instance);
+        return new TurtleFunction(declaration, environment, isInitializer);
+    }
+
     @Override
     public int arity() {
         return declaration.params.size();
@@ -30,7 +39,9 @@ class TurtleFunction implements TurtleCallable {
         try {
             interpreter.executeBlock(declaration.body, environment);
         } catch (Return returnValue) {
+            if (isInitializer) return closure.getAt(0, "this");
             return returnValue.value;
+            if (isInitializer) return closure.getAt(0, "this");
         }
         return null;
     }
