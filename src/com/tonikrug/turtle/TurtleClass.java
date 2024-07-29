@@ -3,9 +3,11 @@ package com.tonikrug.turtle;
 import java.util.List;
 import java.util.Map;
 class TurtleClass implements TurtleCallable {
+    final TurtleClass superclass;
     final String name;
     private final Map<String, TurtleFunction> methods;
-    TurtleClass(String name, Map<String, TurtleFunction> methods) {
+    TurtleClass(String name, TurtleClass superclass, Map<String, TurtleFunction> methods) {
+        this.superclass = superclass;
         this.name = name;
         this.methods = methods;
     }
@@ -13,6 +15,9 @@ class TurtleClass implements TurtleCallable {
     TurtleFunction findMethod(String name) {
         if (methods.containsKey(name)) {
             return methods.get(name);
+        }
+        if (superclass != null) {
+            return superclass.findMethod(name);
         }
         return null;
     }
